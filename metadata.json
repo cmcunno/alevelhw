@@ -1,0 +1,7 @@
+{
+  "name": "AQA AS Biology 7401: MarkScheme Decoder & Self-Marking Lab",
+  "description": "Master AQA Biology application supporting both Year 12 (7401, Units 3.1–3.4) and Year 13 (7402, Units 3.5–3.8). Includes peer mark scheme decoding workshop, teacher live marking projector, printable PDF packs, and interactive self-marking tools.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

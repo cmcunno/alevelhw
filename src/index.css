@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@layer utilities {
+  /* Printable page breaks and hide chrome during printing */
+  @media print {
+    @page {
+      size: A4 portrait;
+      margin: 8mm 10mm 8mm 10mm;
+    }
+
+    html,
+    body,
+    #root,
+    #root > div,
+    .min-h-screen,
+    main,
+    .print-canvas-wrapper {
+      background-color: #ffffff !important;
+      background: #ffffff !important;
+      color: #000000 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: none !important;
+      min-height: 0 !important;
+      box-shadow: none !important;
+      font-size: 10pt !important;
+      line-height: 1.35 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    .no-print {
+      display: none !important;
+    }
+
+    .print-only {
+      display: block !important;
+    }
+
+    .print-page-break {
+      page-break-before: always !important;
+      break-before: page !important;
+    }
+
+    .avoid-break {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+
+    /* Print borders and contrast */
+    .print-border {
+      border: 1.5px solid #1f2937 !important;
+    }
+
+    .print-light-border {
+      border: 1px solid #9ca3af !important;
+    }
+
+    /* Reset card wrapper styles for clean borderless edge-to-edge printing */
+    .print-sheet-card {
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      border-radius: 0 !important;
+      background-color: #ffffff !important;
+      background: #ffffff !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: space-between !important;
+      height: 279mm !important;
+      max-height: 279mm !important;
+      box-sizing: border-box !important;
+      overflow: hidden !important;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+
+    .print-ruled-lines {
+      background-image: repeating-linear-gradient(
+        transparent,
+        transparent 21px,
+        #cbd5e1 21px,
+        #cbd5e1 22px
+      ) !important;
+    }
+  }
+}
+
+@media screen {
+  .print-only {
+    display: none !important;
+  }
+}
+
