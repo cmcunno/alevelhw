@@ -38,6 +38,7 @@ export const AIQuestionGeneratorModal: React.FC<AIQuestionGeneratorModalProps> =
     setLoading(true);
     setErrorMsg(null);
 
+    let data: any = null;
     try {
       const res = await fetch('/api/generate-flawed-answer', {
         method: 'POST',
@@ -52,9 +53,16 @@ export const AIQuestionGeneratorModal: React.FC<AIQuestionGeneratorModalProps> =
         }),
       });
 
-      const data = await res.json();
+      if (res.ok) {
+        data = await res.json();
+      }
+    } catch {
+      // In static deployment (such as GitHub Pages), /api route is not available.
+      // We will generate an authentic curriculum-aligned question offline.
+    }
 
-      if (data.success && data.data) {
+    try {
+      if (data && data.success && data.data) {
         const generated: FlawedQuestion = {
           ...data.data,
           id: `ai-q-${Date.now()}`,
@@ -72,19 +80,19 @@ export const AIQuestionGeneratorModal: React.FC<AIQuestionGeneratorModalProps> =
         onAddQuestion(generated);
         onClose();
       } else {
-        // Fallback generator for instant offline creation
+        // Fallback generator for instant offline or GitHub Pages static deployment
         const fallbackQuestion: FlawedQuestion = {
           id: `custom-q-${Date.now()}`,
-          title: `${topic} (AQA ${specCode})`,
+          title: `${topic || 'AQA Biology Exam Task'} (${specCode})`,
           examBoard: 'AQA',
           specCode,
           aqaUnit,
           subject: 'AQA AS Biology (7401)',
-          topic,
+          topic: topic || 'Cell Transport & Membrane Physiology',
           aoLevel: 'AO2 (3 marks) / AO3 (1 mark)',
           totalMarks: 4,
           questionText: `Explain how the transport of sodium ions is involved in the absorption of glucose by epithelial cells of the ileum into the blood. (4 marks)`,
-          contextNote: `AQA Paper 1 classic AO2 question. Focus on Na+/K+ pump, concentration gradient, co-transporter, and facilitated diffusion into capillary.`,
+          contextNote: `AQA Paper 1 classic AO2 question. Target misconception: ${specificMisconception || 'Active transport direction & diffusion mechanisms'}.`,
           flawedAnswer: `Sodium ions are actively transported into the epithelial cell from the lumen using ATP. This pulls glucose into the cell by active transport. Once inside, sodium diffuses into the blood by osmosis, while glucose is pumped directly into the blood capillary by active transport.`,
           officialMarkScheme: [
             {

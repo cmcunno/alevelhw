@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   INITIAL_FLAWED_QUESTIONS,
   INITIAL_INTERACTIVE_MODULES,
-  INITIAL_STUDENT_SUBMISSIONS,
   AQA_7401_SPECIFICATION_MAP,
 } from './data/curriculumData';
 import { ALL_AQA_SUBSECTION_PACKS } from './data/subsectionPacks';
@@ -11,14 +10,12 @@ import {
   AqaUnit,
   FlawedQuestion,
   InteractiveRevisionModule,
-  StudentSubmission,
   YearGroup,
 } from './types';
 import { Header } from './components/Header';
 import { AqaSpecificationBrowser } from './components/SpecificationMap/AqaSpecificationBrowser';
 import { PeerMarkingWorkshop } from './components/Strategy1/PeerMarkingWorkshop';
 import { LiveProjectorMode } from './components/Strategy1/LiveProjectorMode';
-import { ClassSubmissionsBoard } from './components/Strategy1/ClassSubmissionsBoard';
 import { SelfMarkingLab } from './components/Strategy2/SelfMarkingLab';
 import { PrintableView } from './components/Print/PrintableView';
 import { AIQuestionGeneratorModal } from './components/AIQuestionGeneratorModal';
@@ -31,9 +28,6 @@ export default function App() {
     ALL_AQA_SUBSECTION_PACKS[0].id
   );
   const [printSpecCode, setPrintSpecCode] = useState<string>('3.1.1');
-  const [submissions, setSubmissions] = useState<StudentSubmission[]>(
-    INITIAL_STUDENT_SUBMISSIONS
-  );
   const [interactiveModules] = useState<InteractiveRevisionModule[]>(
     INITIAL_INTERACTIVE_MODULES
   );
@@ -43,26 +37,9 @@ export default function App() {
   const [isAIGeneratorOpen, setIsAIGeneratorOpen] = useState<boolean>(false);
 
   // Handlers
-  const handleStudentSubmit = (
-    submission: Omit<StudentSubmission, 'id' | 'submittedAt'>
-  ) => {
-    const newSub: StudentSubmission = {
-      ...submission,
-      id: `sub-${Date.now()}`,
-      submittedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      isFlaggedForProjection: true,
-    };
-    setSubmissions((prev) => [newSub, ...prev]);
-  };
-
   const handleAddQuestion = (newQ: FlawedQuestion) => {
     setQuestions((prev) => [newQ, ...prev]);
     setSelectedQuestionId(newQ.id);
-  };
-
-  const handleProjectSubmission = (sub: StudentSubmission) => {
-    setSelectedQuestionId(sub.questionId);
-    setIsProjectorOpen(true);
   };
 
   const handleSelectUnitQuestion = (unit: AqaUnit, specCode: string) => {
@@ -128,7 +105,6 @@ export default function App() {
         onOpenAIGenerator={() => setIsAIGeneratorOpen(true)}
         onQuickPrint={() => setActiveTab('printable_pdf')}
         questionCount={questions.length}
-        submissionCount={submissions.length}
       />
 
       {/* Main Content Area */}
@@ -150,22 +126,12 @@ export default function App() {
             selectedQuestionId={selectedQuestionId}
             yearGroup={yearGroup}
             onSelectQuestion={setSelectedQuestionId}
-            onSubmitStudentWork={handleStudentSubmit}
             onOpenProjector={() => setIsProjectorOpen(true)}
           />
         )}
 
         {activeTab === 'strategy2' && (
           <SelfMarkingLab modules={interactiveModules} yearGroup={yearGroup} />
-        )}
-
-        {activeTab === 'teacher_answers' && (
-          <ClassSubmissionsBoard
-            questions={questions}
-            submissions={submissions}
-            onProjectSubmission={handleProjectSubmission}
-            onSelectQuestion={setSelectedQuestionId}
-          />
         )}
 
         {activeTab === 'printable_pdf' && (

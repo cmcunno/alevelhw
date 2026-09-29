@@ -3,31 +3,26 @@ import {
   CheckCircle,
   AlertCircle,
   PenTool,
-  Send,
   Award,
   BookOpen,
   Sparkles,
   HelpCircle
 } from 'lucide-react';
-import { FlawedQuestion, StudentSubmission } from '../../types';
+import { FlawedQuestion } from '../../types';
 
 interface StudentExaminerModeProps {
   question: FlawedQuestion;
-  onSubmit: (submission: Omit<StudentSubmission, 'id' | 'submittedAt'>) => void;
-  hasSubmitted?: boolean;
 }
 
 export const StudentExaminerMode: React.FC<StudentExaminerModeProps> = ({
   question,
-  onSubmit,
-  hasSubmitted = false,
 }) => {
   const [studentName, setStudentName] = useState<string>('');
   const [awardedMarks, setAwardedMarks] = useState<number>(0);
   const [annotationNotes, setAnnotationNotes] = useState<string>('');
   const [studentRewrite, setStudentRewrite] = useState<string>('');
   const [selectedIssueTags, setSelectedIssueTags] = useState<Record<string, string>>({});
-  const [submittedLocal, setSubmittedLocal] = useState<boolean>(hasSubmitted);
+  const [submittedLocal, setSubmittedLocal] = useState<boolean>(false);
 
   const handleTagToggle = (phrase: string, issue: string) => {
     setSelectedIssueTags((prev) => {
@@ -43,27 +38,10 @@ export const StudentExaminerMode: React.FC<StudentExaminerModeProps> = ({
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!studentName.trim()) {
-      alert('Please enter your name before submitting.');
-      return;
-    }
     if (!studentRewrite.trim()) {
-      alert('Please write your 100% exemplar rewrite before submitting.');
+      alert('Please write your 100% exemplar rewrite before saving.');
       return;
     }
-
-    const annotatedSummary = Object.entries(selectedIssueTags)
-      .map(([phrase, issue]) => `[${issue}]: "${phrase}"`)
-      .concat(annotationNotes ? [`Note: ${annotationNotes}`] : [])
-      .join('; ');
-
-    onSubmit({
-      studentName: studentName.trim(),
-      questionId: question.id,
-      awardedMarks,
-      annotatedNotes: annotatedSummary || 'No specific phrase tags selected.',
-      studentRewrite: studentRewrite.trim(),
-    });
 
     setSubmittedLocal(true);
   };
@@ -287,8 +265,8 @@ export const StudentExaminerMode: React.FC<StudentExaminerModeProps> = ({
               type="submit"
               className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition shadow-lg shadow-emerald-600/30"
             >
-              <Send className="w-4 h-4 mr-2" />
-              <span>Submit to Teacher Dashboard</span>
+              <CheckCircle className="w-4 h-4 mr-2" />
+              <span>Complete & Check Rewrite</span>
             </button>
           </div>
 
@@ -296,7 +274,7 @@ export const StudentExaminerMode: React.FC<StudentExaminerModeProps> = ({
             <div className="mt-4 p-3 rounded-lg bg-emerald-900/40 border border-emerald-600 text-emerald-200 text-xs flex items-center">
               <CheckCircle className="w-4 h-4 mr-2 text-emerald-400 flex-shrink-0" />
               <span>
-                Your answer has been submitted! Your teacher can view and project your decoding on the classroom board.
+                Your answer has been saved! Review your answer against the Official Mark Scheme tab above to self-assess your score.
               </span>
             </div>
           )}

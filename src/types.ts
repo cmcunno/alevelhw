@@ -137,5 +137,4 @@ export type ActiveTab =
   | 'spec_map'
   | 'strategy1'
   | 'strategy2'
-  | 'teacher_answers'
   | 'printable_pdf';

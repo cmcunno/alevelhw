@@ -331,7 +331,7 @@ export const PrintableView: React.FC<PrintableViewProps> = ({
           const renderStudentSheet = (isPageBreak: boolean, keySuffix: string) => (
             <div
               key={`${q.id || q.specCode}-${keySuffix}`}
-              className={`bg-white text-slate-900 p-8 sm:p-12 rounded-2xl shadow-xl max-w-4xl mx-auto border border-slate-200 print-sheet-card flex flex-col justify-between ${
+              className={`bg-white text-slate-900 p-8 sm:p-12 rounded-2xl shadow-xl max-w-4xl mx-auto border border-slate-200 min-h-[1050px] print:min-h-0 print-sheet-card flex flex-col justify-between ${
                 isPageBreak ? 'print-page-break' : ''
               }`}
             >
@@ -428,7 +428,7 @@ export const PrintableView: React.FC<PrintableViewProps> = ({
                   <span className="text-2xs font-bold uppercase tracking-wider text-rose-700 block mb-0.5">
                     Flawed Student Answer (Annotate in Margin & Circle Misconceptions):
                   </span>
-                  <div className="border border-rose-400 bg-rose-50/40 p-2 rounded-lg font-serif text-sm print:text-xs text-slate-900 leading-relaxed">
+                  <div className="border border-rose-400 bg-rose-50/40 p-2.5 rounded-lg font-serif text-base print:text-[13px] print:leading-relaxed text-slate-900 leading-relaxed">
                     "{q.flawedAnswer}"
                   </div>
                 </div>
@@ -451,16 +451,19 @@ export const PrintableView: React.FC<PrintableViewProps> = ({
                     <p className="text-3xs italic text-slate-400/70 print:text-slate-400/60 leading-tight mb-1 mt-0 select-none">
                       Why were marks withheld? Identify missing specification keywords or misconceptions:
                     </p>
-                    <div className="space-y-3 pt-0.5">
-                      <div className="border-b border-dashed border-slate-300 h-3.5" />
-                      <div className="border-b border-dashed border-slate-300 h-3.5" />
+                    <div className="space-y-2.5 pt-0.5 pb-0.5 print:space-y-2">
+                      <div className="border-b border-dashed border-slate-300/90 h-3.5 print:h-3" />
+                      <div className="border-b border-dashed border-slate-300/90 h-3.5 print:h-3" />
+                      <div className="border-b border-dashed border-slate-300/90 h-3.5 print:h-3" />
+                      <div className="border-b border-dashed border-slate-300/90 h-3.5 print:h-3" />
+                      <div className="border-b border-dashed border-slate-300/90 h-3.5 print:h-3" />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Task 2: 100% Exemplar Rewrite Ruled Lines with Word Bank (Flexibly expands to fill space) */}
-              <div className="avoid-break flex-1 flex flex-col space-y-1 my-1 min-h-[120px] print:min-h-0">
+              {/* Task 2: 100% Exemplar Rewrite Ruled Lines with Word Bank (Fills remaining sheet space until footer) */}
+              <div className="avoid-break flex-1 flex flex-col space-y-1 my-1 print:my-0.5 min-h-[140px] print:min-h-0">
                 <div className="flex items-center justify-between">
                   <span className="text-2xs font-bold uppercase text-emerald-800">
                     Task 2: Rewrite a 100% Exemplar Answer (incorporating all keywords)
@@ -468,7 +471,7 @@ export const PrintableView: React.FC<PrintableViewProps> = ({
                 </div>
 
                 {/* Word Bank Chips */}
-                <div className="p-1 bg-slate-100 rounded border border-slate-300 flex flex-wrap gap-1 items-center text-2xs font-semibold text-slate-700">
+                <div className="p-1 bg-slate-100 rounded border border-slate-300 flex flex-wrap gap-1 items-center text-2xs font-semibold text-slate-700 flex-shrink-0">
                   <span className="text-slate-500 font-bold mr-1">Word Bank:</span>
                   {q.keyTerms.map((term, i) => (
                     <span
@@ -480,12 +483,12 @@ export const PrintableView: React.FC<PrintableViewProps> = ({
                   ))}
                 </div>
 
-                {/* Blank ruled space for handwriting in print - Fills remaining sheet height */}
-                <div className="flex-1 min-h-[90px] border border-slate-300 rounded-lg print-ruled-lines p-2 font-serif text-xs leading-[21px]" />
+                {/* Blank ruled space for handwriting in print - Expands to fill remaining sheet height down to footer */}
+                <div className="flex-1 w-full border border-slate-300 rounded-lg print-ruled-lines p-2 font-serif text-xs leading-[21px] min-h-[100px]" />
               </div>
 
               {/* Purple-Pen Self-Assessment Checklist - Strictly anchored at the foot of the page */}
-              <div className="mt-auto p-2 bg-slate-50 rounded-lg border border-slate-200 avoid-break text-2xs text-slate-600 flex items-center justify-between print:py-1.5">
+              <div className="mt-2 print:mt-1 p-2 bg-slate-50 rounded-lg border border-slate-200 avoid-break text-2xs text-slate-600 flex items-center justify-between print:py-1.5 flex-shrink-0">
                 <span className="font-semibold text-purple-900">Purple-Pen Self-Assessment:</span>
                 <div className="flex space-x-3 font-medium text-3xs sm:text-2xs">
                   <label className="flex items-center space-x-1 cursor-pointer">

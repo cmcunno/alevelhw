@@ -11,7 +11,7 @@ import {
   ExternalLink,
   Projector
 } from 'lucide-react';
-import { FlawedQuestion, StudentSubmission, AqaUnit, YearGroup } from '../../types';
+import { FlawedQuestion, AqaUnit, YearGroup } from '../../types';
 import { StudentExaminerMode } from './StudentExaminerMode';
 
 interface PeerMarkingWorkshopProps {
@@ -19,7 +19,6 @@ interface PeerMarkingWorkshopProps {
   selectedQuestionId: string;
   yearGroup?: YearGroup;
   onSelectQuestion: (id: string) => void;
-  onSubmitStudentWork: (submission: Omit<StudentSubmission, 'id' | 'submittedAt'>) => void;
   onOpenProjector: () => void;
 }
 
@@ -28,7 +27,6 @@ export const PeerMarkingWorkshop: React.FC<PeerMarkingWorkshopProps> = ({
   selectedQuestionId,
   yearGroup = 'year12',
   onSelectQuestion,
-  onSubmitStudentWork,
   onOpenProjector,
 }) => {
   const [subView, setSubView] = useState<'student_workspace' | 'official_scheme'>('student_workspace');
@@ -195,7 +193,6 @@ export const PeerMarkingWorkshop: React.FC<PeerMarkingWorkshopProps> = ({
       {subView === 'student_workspace' ? (
         <StudentExaminerMode
           question={currentQuestion}
-          onSubmit={onSubmitStudentWork}
         />
       ) : (
         /* Teacher / Examiner Official Scheme View */

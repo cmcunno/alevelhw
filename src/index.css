@@ -88,6 +88,15 @@
       ) !important;
     }
   }
+
+  .print-ruled-lines {
+    background-image: repeating-linear-gradient(
+      transparent,
+      transparent 21px,
+      #e2e8f0 21px,
+      #e2e8f0 22px
+    );
+  }
 }
 
 @media screen {

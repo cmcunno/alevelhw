@@ -7,7 +7,6 @@ import {
   Cpu,
   Layers,
   FileCheck2,
-  Users
 } from 'lucide-react';
 import { ActiveTab, YearGroup } from '../types';
 
@@ -20,7 +19,6 @@ interface HeaderProps {
   onOpenAIGenerator: () => void;
   onQuickPrint: () => void;
   questionCount: number;
-  submissionCount: number;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -32,7 +30,6 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAIGenerator,
   onQuickPrint,
   questionCount,
-  submissionCount,
 }) => {
   return (
     <header className="no-print bg-slate-900 text-slate-100 border-b border-slate-800 sticky top-0 z-40 shadow-md">
@@ -161,23 +158,6 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="ml-2 px-1.5 py-0.5 rounded-full text-2xs bg-teal-800/80 text-teal-200">
               Interactive
             </span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('teacher_answers')}
-            className={`flex items-center px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
-              activeTab === 'teacher_answers'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            <Users className="w-4 h-4 mr-2" />
-            <span>Teacher Dashboard & Answers</span>
-            {submissionCount > 0 && (
-              <span className="ml-2 px-1.5 py-0.5 rounded-full text-2xs bg-amber-500/30 text-amber-200">
-                {submissionCount} live
-              </span>
-            )}
           </button>
 
           <button
