@@ -6,8 +6,8 @@ import {
   RotateCcw,
   CheckCircle2,
   AlertTriangle,
-  UserCheck,
   Eye,
+  EyeOff,
   PenTool,
   ChevronRight,
   Maximize2,
@@ -21,19 +21,6 @@ interface LiveProjectorModeProps {
   onClose: () => void;
   onNextQuestion?: () => void;
 }
-
-const CLASS_STUDENT_NAMES = [
-  'Maya Patel',
-  'Marcus Evans',
-  'Liam Chen',
-  'Freya Davies',
-  'Amara Okafor',
-  'Ethan Wright',
-  'Sophie Bennett',
-  'Tariq Al-Mansoor',
-  'Chloe Jenkins',
-  'Oliver Campbell',
-];
 
 export const LiveProjectorMode: React.FC<LiveProjectorModeProps> = ({
   question,
@@ -49,8 +36,7 @@ export const LiveProjectorMode: React.FC<LiveProjectorModeProps> = ({
   const [revealedMarkCodes, setRevealedMarkCodes] = useState<Record<string, boolean>>({});
   const [showExaminerAnnotations, setShowExaminerAnnotations] = useState<boolean>(false);
   const [purplePenMode, setPurplePenMode] = useState<boolean>(false);
-  const [coldCallStudent, setColdCallStudent] = useState<string | null>(null);
-  const [isSpinningStudent, setIsSpinningStudent] = useState<boolean>(false);
+  const [showExaminerAward, setShowExaminerAward] = useState<boolean>(false);
 
   // Timer effect
   useEffect(() => {
@@ -72,7 +58,7 @@ export const LiveProjectorMode: React.FC<LiveProjectorModeProps> = ({
     setRevealedMarkCodes({});
     setShowExaminerAnnotations(false);
     setPurplePenMode(false);
-    setColdCallStudent(null);
+    setShowExaminerAward(false);
   }, [question, timerDuration]);
 
   const toggleMarkReveal = (code: string) => {
@@ -88,20 +74,6 @@ export const LiveProjectorMode: React.FC<LiveProjectorModeProps> = ({
       all[m.markCode] = true;
     });
     setRevealedMarkCodes(all);
-  };
-
-  const spinColdCall = () => {
-    setIsSpinningStudent(true);
-    let count = 0;
-    const interval = setInterval(() => {
-      const randomName = CLASS_STUDENT_NAMES[Math.floor(Math.random() * CLASS_STUDENT_NAMES.length)];
-      setColdCallStudent(randomName);
-      count++;
-      if (count > 12) {
-        clearInterval(interval);
-        setIsSpinningStudent(false);
-      }
-    }, 80);
   };
 
   const formatTime = (seconds: number) => {
@@ -264,35 +236,83 @@ export const LiveProjectorMode: React.FC<LiveProjectorModeProps> = ({
               )}
             </div>
 
-            {/* Examiner Cold-Call Box */}
-            <div className="mt-5 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-start space-x-3">
-                <UserCheck className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
-                <div>
-                  <div className="text-xs uppercase font-bold text-amber-300 tracking-wider">
-                    Live Cold-Call Prompt for Class
-                  </div>
-                  <div className="text-sm text-slate-200 font-medium">
-                    {question.recommendedColdCall}
+            {/* Examiner Actual Award Box (Hidden behind reveal button) */}
+            <div className="mt-5 p-5 rounded-2xl bg-slate-950/80 border border-slate-800 shadow-lg">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center space-x-3">
+                  <span className="p-2 rounded-xl bg-rose-500/20 text-rose-400">
+                    <Award className="w-5 h-5" />
+                  </span>
+                  <div>
+                    <span className="text-xs uppercase font-extrabold tracking-wider text-rose-400 block">
+                      Senior Examiner Actual Award
+                    </span>
+                    <p className="text-xs text-slate-400">
+                      Official AQA mark allocation & examiner commentary
+                    </p>
                   </div>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowExaminerAward(!showExaminerAward)}
+                  className={`px-4 py-2 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center space-x-2 shadow cursor-pointer ${
+                    showExaminerAward
+                      ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
+                      : 'bg-rose-600 hover:bg-rose-500 text-white shadow-rose-600/30'
+                  }`}
+                >
+                  {showExaminerAward ? (
+                    <>
+                      <EyeOff className="w-4 h-4 mr-1.5" />
+                      <span>Hide Examiner Award & Comment</span>
+                    </>
+                  ) : (
+                    <>
+                      <Eye className="w-4 h-4 mr-1.5" />
+                      <span>Reveal Examiner Award & Comment</span>
+                    </>
+                  )}
+                </button>
               </div>
 
-              <div className="flex items-center space-x-2 self-end sm:self-auto">
-                <button
-                  onClick={spinColdCall}
-                  disabled={isSpinningStudent}
-                  className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition flex items-center shadow"
-                >
-                  <Sparkles className="w-3.5 h-3.5 mr-1" />
-                  {isSpinningStudent ? 'Picking...' : 'Pick Student'}
-                </button>
-                {coldCallStudent && (
-                  <span className="px-3 py-1 rounded-lg bg-amber-400/20 text-amber-200 text-sm font-bold border border-amber-400/40">
-                    {coldCallStudent}
+              {showExaminerAward ? (
+                <div className="mt-4 pt-4 border-t border-slate-800/80 space-y-3 animate-in fade-in duration-200">
+                  <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl bg-rose-950/30 border border-rose-500/30">
+                    <div className="flex items-center space-x-2.5">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+                        Official Marks Awarded:
+                      </span>
+                      <span className="px-3.5 py-1 rounded-lg text-base font-extrabold font-mono bg-rose-500 text-white shadow-sm">
+                        {question.examinerVerdict.marksAwarded} / {question.examinerVerdict.maxMarks} Marks
+                      </span>
+                    </div>
+                    <span className="text-xs font-medium text-rose-300">
+                      {question.examinerVerdict.marksAwarded === 0
+                        ? '0 Marks: Critical specification errors & banned phrasing'
+                        : question.examinerVerdict.marksAwarded < question.examinerVerdict.maxMarks
+                        ? 'Partial credit: Missed essential specification criteria'
+                        : 'Full marks: Complete specification alignment'}
+                    </span>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 text-sm leading-relaxed">
+                    <div className="text-2xs uppercase tracking-wider font-bold text-rose-400 mb-1.5 flex items-center">
+                      <AlertTriangle className="w-3.5 h-3.5 text-amber-400 mr-1.5" />
+                      Chief Examiner Commentary:
+                    </div>
+                    <p className="text-slate-300 font-medium">
+                      {question.examinerVerdict.summary}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-3 pt-3 border-t border-slate-800/50 flex items-center justify-between text-xs text-slate-500">
+                  <span className="italic">
+                    Actual marks and examiner feedback are hidden so students can deliberate and award marks first.
                   </span>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -418,17 +438,6 @@ export const LiveProjectorMode: React.FC<LiveProjectorModeProps> = ({
                   </div>
                 );
               })}
-            </div>
-
-            {/* Verdict Box */}
-            <div className="mt-5 p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 space-y-1">
-              <div className="flex items-center justify-between font-bold text-slate-200 mb-1">
-                <span>Examiner Actual Award:</span>
-                <span className="text-rose-400 font-mono text-sm">
-                  {question.examinerVerdict.marksAwarded} / {question.examinerVerdict.maxMarks} Marks
-                </span>
-              </div>
-              <p className="text-slate-400">{question.examinerVerdict.summary}</p>
             </div>
           </div>
         </div>
