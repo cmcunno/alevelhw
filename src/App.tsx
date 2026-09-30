@@ -148,11 +148,18 @@ export default function App() {
         <LiveProjectorMode
           question={currentQuestion}
           onClose={() => setIsProjectorOpen(false)}
+          onPreviousQuestion={() => {
+            const curIdx = questions.findIndex((q) => q.id === selectedQuestionId);
+            const prevIdx = (curIdx - 1 + questions.length) % questions.length;
+            setSelectedQuestionId(questions[prevIdx].id);
+          }}
           onNextQuestion={() => {
             const curIdx = questions.findIndex((q) => q.id === selectedQuestionId);
             const nextIdx = (curIdx + 1) % questions.length;
             setSelectedQuestionId(questions[nextIdx].id);
           }}
+          questionNumber={questions.findIndex((q) => q.id === selectedQuestionId) + 1}
+          totalQuestions={questions.length}
         />
       )}
 

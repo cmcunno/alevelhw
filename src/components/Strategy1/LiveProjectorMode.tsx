@@ -9,6 +9,7 @@ import {
   Eye,
   EyeOff,
   PenTool,
+  ChevronLeft,
   ChevronRight,
   Maximize2,
   Sparkles,
@@ -19,13 +20,19 @@ import { FlawedQuestion } from '../../types';
 interface LiveProjectorModeProps {
   question: FlawedQuestion;
   onClose: () => void;
+  onPreviousQuestion?: () => void;
   onNextQuestion?: () => void;
+  questionNumber?: number;
+  totalQuestions?: number;
 }
 
 export const LiveProjectorMode: React.FC<LiveProjectorModeProps> = ({
   question,
   onClose,
+  onPreviousQuestion,
   onNextQuestion,
+  questionNumber,
+  totalQuestions,
 }) => {
   // 5-7 mins classroom live timer (default 6 mins = 360 seconds)
   const [timerDuration, setTimerDuration] = useState<number>(360);
@@ -60,6 +67,32 @@ export const LiveProjectorMode: React.FC<LiveProjectorModeProps> = ({
     setPurplePenMode(false);
     setShowExaminerAward(false);
   }, [question, timerDuration]);
+
+  // Keyboard navigation for presenter clickers and arrow keys
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        if (onPreviousQuestion) {
+          e.preventDefault();
+          onPreviousQuestion();
+        }
+      } else if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+        if (onNextQuestion) {
+          e.preventDefault();
+          onNextQuestion();
+        }
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onPreviousQuestion, onNextQuestion, onClose]);
 
   const toggleMarkReveal = (code: string) => {
     setRevealedMarkCodes((prev) => ({
@@ -151,13 +184,39 @@ export const LiveProjectorMode: React.FC<LiveProjectorModeProps> = ({
             </div>
           </div>
 
-          {onNextQuestion && (
-            <button
-              onClick={onNextQuestion}
-              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
-            >
-              Next Question
-            </button>
+          {/* Question Navigation Controls */}
+          {(onPreviousQuestion || onNextQuestion) && (
+            <div className="flex items-center bg-slate-800/90 rounded-xl border border-slate-700/80 p-1 shadow-inner">
+              {onPreviousQuestion && (
+                <button
+                  onClick={onPreviousQuestion}
+                  className="flex items-center space-x-1 px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-200 hover:text-white transition active:scale-95"
+                  title="Previous Question (← Left Arrow / Page Up)"
+                >
+                  <ChevronLeft className="w-4 h-4 mr-0.5" />
+                  <span className="hidden sm:inline">Previous</span>
+                </button>
+              )}
+
+              {questionNumber !== undefined && totalQuestions !== undefined && (
+                <span className="text-xs font-medium text-slate-300 px-3 select-none flex items-center">
+                  <span className="text-emerald-400 font-bold">{questionNumber}</span>
+                  <span className="text-slate-500 mx-1">/</span>
+                  <span className="text-slate-400">{totalQuestions}</span>
+                </span>
+              )}
+
+              {onNextQuestion && (
+                <button
+                  onClick={onNextQuestion}
+                  className="flex items-center space-x-1 px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-200 hover:text-white transition active:scale-95"
+                  title="Next Question (→ Right Arrow / Page Down)"
+                >
+                  <span className="hidden sm:inline">Next</span>
+                  <ChevronRight className="w-4 h-4 ml-0.5" />
+                </button>
+              )}
+            </div>
           )}
 
           <button
