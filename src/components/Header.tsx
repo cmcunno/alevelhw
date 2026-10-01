@@ -7,6 +7,7 @@ import {
   Cpu,
   Layers,
   FileCheck2,
+  Lock,
 } from 'lucide-react';
 import { ActiveTab, YearGroup } from '../types';
 
@@ -18,6 +19,7 @@ interface HeaderProps {
   onOpenProjector: () => void;
   onOpenAIGenerator: () => void;
   onQuickPrint: () => void;
+  onLock?: () => void;
   questionCount: number;
 }
 
@@ -29,6 +31,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenProjector,
   onOpenAIGenerator,
   onQuickPrint,
+  onLock,
   questionCount,
 }) => {
   return (
@@ -110,6 +113,17 @@ export const Header: React.FC<HeaderProps> = ({
               <Printer className="w-4 h-4 mr-1.5" />
               <span>Print / PDF</span>
             </button>
+
+            {onLock && (
+              <button
+                onClick={onLock}
+                className="inline-flex items-center px-2.5 py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-white transition-colors shadow-sm"
+                title="Lock Portal (Log Out)"
+              >
+                <Lock className="w-3.5 h-3.5 sm:mr-1.5 text-slate-400" />
+                <span className="hidden sm:inline">Lock</span>
+              </button>
+            )}
           </div>
         </div>
 

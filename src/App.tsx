@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   INITIAL_FLAWED_QUESTIONS,
   INITIAL_INTERACTIVE_MODULES,
@@ -19,8 +19,15 @@ import { LiveProjectorMode } from './components/Strategy1/LiveProjectorMode';
 import { SelfMarkingLab } from './components/Strategy2/SelfMarkingLab';
 import { PrintableView } from './components/Print/PrintableView';
 import { AIQuestionGeneratorModal } from './components/AIQuestionGeneratorModal';
+import { TeacherAuthGate } from './components/Auth/TeacherAuthGate';
+import {
+  isTeacherAuthenticated,
+  checkUrlAuthParam,
+  clearTeacherAuthentication,
+} from './services/authService';
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => isTeacherAuthenticated());
   const [activeTab, setActiveTab] = useState<ActiveTab>('spec_map');
   const [yearGroup, setYearGroup] = useState<YearGroup>('year12');
   const [questions, setQuestions] = useState<FlawedQuestion[]>(ALL_AQA_SUBSECTION_PACKS);
@@ -35,6 +42,24 @@ export default function App() {
   // Modals & Projector
   const [isProjectorOpen, setIsProjectorOpen] = useState<boolean>(false);
   const [isAIGeneratorOpen, setIsAIGeneratorOpen] = useState<boolean>(false);
+
+  // Check URL bookmark authorization (e.g. ?auth=pyrexpyrex)
+  useEffect(() => {
+    checkUrlAuthParam().then((validFromUrl) => {
+      if (validFromUrl) {
+        setIsAuthenticated(true);
+      }
+    });
+  }, []);
+
+  const handleLock = () => {
+    clearTeacherAuthentication();
+    setIsAuthenticated(false);
+  };
+
+  if (!isAuthenticated) {
+    return <TeacherAuthGate onAuthenticated={() => setIsAuthenticated(true)} />;
+  }
 
   // Handlers
   const handleAddQuestion = (newQ: FlawedQuestion) => {
@@ -104,6 +129,7 @@ export default function App() {
         onOpenProjector={() => setIsProjectorOpen(true)}
         onOpenAIGenerator={() => setIsAIGeneratorOpen(true)}
         onQuickPrint={() => setActiveTab('printable_pdf')}
+        onLock={handleLock}
         questionCount={questions.length}
       />
 
